@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">ShopLocation</string>
     <string name="find_shops">Cerca negozi</string>
+
 </resources>
