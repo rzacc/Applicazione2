@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.FragmentManager;
 import android.content.*;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -26,6 +27,8 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
     private static final int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     LocationClient locationClient;
     Location currentLocation;
+    SQLiteDatabase db;
+    ShopLocationDbHelper dbHelper;
 
     //Called when the activity is first created.
     @Override
@@ -33,6 +36,29 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
         super.onCreate(savedInstanceState);
         locationClient = new LocationClient(this, this, this);
         setContentView(R.layout.main);
+
+        //Insert some test values into the database
+        dbHelper = new ShopLocationDbHelper(this);
+        db = dbHelper.getWritableDatabase();
+
+        ContentValues shop1 = new ContentValues();
+        shop1.put(ShopLocationDbContract.ShopTable.COLUMN_NAME_NAME, "SHOP1-VA");
+        shop1.put(ShopLocationDbContract.ShopTable.COLUMN_NAME_LATITUDE, 45.807594);
+        shop1.put(ShopLocationDbContract.ShopTable.COLUMN_NAME_LONGITUDE, 8.86266);
+        db.insert(ShopLocationDbContract.ShopTable.TABLE_NAME, null, shop1);
+
+        ContentValues shop2 = new ContentValues();
+        shop2.put(ShopLocationDbContract.ShopTable.COLUMN_NAME_NAME, "SHOP2-VA");
+        shop2.put(ShopLocationDbContract.ShopTable.COLUMN_NAME_LATITUDE, 45.815755);
+        shop2.put(ShopLocationDbContract.ShopTable.COLUMN_NAME_LONGITUDE, 8.82805);
+        db.insert(ShopLocationDbContract.ShopTable.TABLE_NAME, null, shop2);
+
+        ContentValues shop3 = new ContentValues();
+        shop2.put(ShopLocationDbContract.ShopTable.COLUMN_NAME_NAME, "SHOP3-MI");
+        shop2.put(ShopLocationDbContract.ShopTable.COLUMN_NAME_LATITUDE, 45.610042);
+        shop2.put(ShopLocationDbContract.ShopTable.COLUMN_NAME_LONGITUDE, 8.962486);
+        db.insert(ShopLocationDbContract.ShopTable.TABLE_NAME, null, shop3);
+
     }
 
     @Override
