@@ -4,7 +4,8 @@ import android.provider.BaseColumns;
 
 public final class ShopLocationDbContract {
     //Empty constructor to prevent from accidentally instantiating the contract class
-    public ShopLocationDbContract(){}
+    public ShopLocationDbContract() {
+    }
 
     //Inner class that defines the shop table contents
     public static abstract class ShopTable implements BaseColumns {

@@ -39,36 +39,17 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
 
         //Insert some test values into the database
         dbHelper = new ShopLocationDbHelper(this);
-        db = dbHelper.getWritableDatabase();
-
-        ContentValues shop1 = new ContentValues();
-        shop1.put(ShopLocationDbContract.ShopTable.COLUMN_NAME_NAME, "SHOP1-VA");
-        shop1.put(ShopLocationDbContract.ShopTable.COLUMN_NAME_LATITUDE, 45.807594);
-        shop1.put(ShopLocationDbContract.ShopTable.COLUMN_NAME_LONGITUDE, 8.86266);
-        db.insert(ShopLocationDbContract.ShopTable.TABLE_NAME, null, shop1);
-
-        ContentValues shop2 = new ContentValues();
-        shop2.put(ShopLocationDbContract.ShopTable.COLUMN_NAME_NAME, "SHOP2-VA");
-        shop2.put(ShopLocationDbContract.ShopTable.COLUMN_NAME_LATITUDE, 45.815755);
-        shop2.put(ShopLocationDbContract.ShopTable.COLUMN_NAME_LONGITUDE, 8.82805);
-        db.insert(ShopLocationDbContract.ShopTable.TABLE_NAME, null, shop2);
-
-        ContentValues shop3 = new ContentValues();
-        shop2.put(ShopLocationDbContract.ShopTable.COLUMN_NAME_NAME, "SHOP3-MI");
-        shop2.put(ShopLocationDbContract.ShopTable.COLUMN_NAME_LATITUDE, 45.610042);
-        shop2.put(ShopLocationDbContract.ShopTable.COLUMN_NAME_LONGITUDE, 8.962486);
-        db.insert(ShopLocationDbContract.ShopTable.TABLE_NAME, null, shop3);
 
     }
 
     @Override
-    protected void onStart(){
+    protected void onStart() {
         super.onStart();
         locationClient.connect();
     }
 
     @Override
-    protected void onStop(){
+    protected void onStop() {
         locationClient.disconnect();
         super.onStop();
     }
@@ -104,12 +85,12 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
      * Handle results returned to the Activity by Google Play services
      */
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //Decide what to do based on the original request code
-        switch(requestCode){
+        switch (requestCode) {
             case CONNECTION_FAILURE_RESOLUTION_REQUEST:
                 //If the result code is Activity.RESULT_OK, try to connect again
-                switch(resultCode){
+                switch (resultCode) {
                     case Activity.RESULT_OK:
                         servicesConnected();
                 }
@@ -118,14 +99,14 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
 
     //Called by Location Services when the request to connect the client finishes successfully.
     @Override
-    public void onConnected(Bundle dataBundle){
+    public void onConnected(Bundle dataBundle) {
         //Display the connection status
         Toast.makeText(this, "Connected to Location Services", Toast.LENGTH_SHORT).show();
     }
 
     //Called by Location Services if the connection to the location client drops because of an error.
     @Override
-    public void onDisconnected(){
+    public void onDisconnected() {
         //Display the connection status
         Toast.makeText(this, "Disconnected from Location Services. Please re-connect.", Toast.LENGTH_SHORT).show();
     }
@@ -161,11 +142,11 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
 
 
     //Called when "Cerca negozi" is clicked
-    public void searchForShops(View v){
-        if(servicesConnected()){
+    public void searchForShops(View v) {
+        if (servicesConnected()) {
             currentLocation = locationClient.getLastLocation();
             //TextView to check current location (to be removed)
-            TextView tv = (TextView)findViewById(R.id.currentLocation);
+            TextView tv = (TextView) findViewById(R.id.currentLocation);
             tv.setText(currentLocation.toString());
         }
     }

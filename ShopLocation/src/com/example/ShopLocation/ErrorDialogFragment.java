@@ -9,19 +9,19 @@ public class ErrorDialogFragment extends DialogFragment {
     private Dialog errorDialog;
 
     //Default constructor. Sets the dialog field to null
-    public ErrorDialogFragment(){
+    public ErrorDialogFragment() {
         super();
         errorDialog = null;
     }
 
     //Set the dialog to display
-    public void setDialog(Dialog dialog){
+    public void setDialog(Dialog dialog) {
         errorDialog = dialog;
     }
 
     //Return a Dialog to the DialogFragment
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState){
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
         return errorDialog;
     }
 }
