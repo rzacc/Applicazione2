@@ -2,12 +2,12 @@ package com.example.ShopLocation;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.FragmentManager;
-import android.content.*;
+import android.content.Intent;
+import android.content.IntentSender;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -16,6 +16,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
+
+import java.io.File;
 
 public class MainActivity extends Activity implements GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener {
@@ -38,7 +40,36 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
         setContentView(R.layout.main);
 
         //Insert some test values into the database
-        dbHelper = new ShopLocationDbHelper(this);
+
+        //dbHelper = new ShopLocationDbHelper(this);
+
+        String path;
+
+        if (android.os.Build.VERSION.SDK_INT >= 4.2) {
+            path = getApplicationInfo().dataDir + "/databases/";
+        } else {
+            path = "/data/data/" + getPackageName() + "/databases/";
+        }
+
+        String DATABASE_NAME = "ShopDatabase.db";
+        File file = getDatabasePath(DATABASE_NAME);
+        Log.d("DEBUG!!! path ", file.getAbsolutePath());
+
+
+        SQLiteDatabase db = SQLiteDatabase.openDatabase(path +
+                DATABASE_NAME, null, SQLiteDatabase.OPEN_READONLY);
+
+
+        String TABLE_NAME = "shop";
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+        if (cursor.moveToFirst()) {
+            do {
+                //Log.d("DEBUG!!!", "count " + cursor.getCount());
+                //Log.d("DEBUG!!!", "cols " + cursor.getColumnName(0) + " " + cursor.getColumnName(1) + " " + cursor.getColumnName(2) + " " + cursor.getColumnName(3));
+                Log.d("DEBUG!!!", "vals" + cursor.getString(0) + " " + cursor.getString(1) + " " + cursor.getString(2) + " " + cursor.getString(3));
+            } while (cursor.moveToNext());
+        }
+
 
     }
 
