@@ -4,13 +4,11 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.database.Cursor;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -18,6 +16,7 @@ import com.google.android.gms.location.LocationClient;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 public class MainActivity extends Activity implements GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener {
@@ -30,6 +29,10 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
     LocationClient locationClient;
     Location currentLocation;
 
+    ShopList shopList;
+    Adapter listAdapter;
+    List<Shop> list;
+
     ShopLocationDbHelper dbHelper;
 
     //Called when the activity is first created.
@@ -38,6 +41,13 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
         super.onCreate(savedInstanceState);
         locationClient = new LocationClient(this, this, this);
         setContentView(R.layout.main);
+        ShopLocationApp.setContext(this);
+
+        shopList = ShopListImplementation.factory.getShopList();
+        listAdapter = shopList.createList();
+        list = shopList.getList();
+        final ListView listView = (ListView) findViewById(R.id.shop_list);
+        listView.setAdapter((ListAdapter) listAdapter);
 
         dbHelper = new ShopLocationDbHelper(this);
         try {
@@ -51,7 +61,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
         }
 
 
-        }
+    }
 
 
     @Override
@@ -157,18 +167,20 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
     public void searchForShops(View v) {
         if (servicesConnected()) {
             currentLocation = locationClient.getLastLocation();
+
             //TextView to check current location (to be removed)
             TextView tv = (TextView) findViewById(R.id.currentLocation);
             tv.setText(currentLocation.toString());
 
-            //TextViews to check if database connection works (to be removed)
-            TextView dbQuery = (TextView)findViewById(R.id.databaseQuery);
-            TextView dbQuery2 = (TextView)findViewById(R.id.databaseQuery2);
-            TextView dbQuery3 = (TextView)findViewById(R.id.databaseQuery3);
             String[] s = dbHelper.query();
-            dbQuery.setText(s[0]);
-            dbQuery2.setText(s[1]);
-            dbQuery3.setText(s[2]);
+
+            Shop shop1 = new Shop(s[0]);
+            Shop shop2 = new Shop(s[1]);
+            Shop shop3 = new Shop(s[2]);
+            list.add(shop1);
+            list.add(shop2);
+            list.add(shop3);
+            shopList.notifyDataSetChanged();
         }
     }
 

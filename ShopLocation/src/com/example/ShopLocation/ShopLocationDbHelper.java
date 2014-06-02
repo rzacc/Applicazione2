@@ -2,9 +2,9 @@ package com.example.ShopLocation;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteDatabase;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,8 +13,6 @@ import java.io.OutputStream;
 import java.sql.SQLException;
 
 public class ShopLocationDbHelper extends SQLiteOpenHelper {
-
-
 
 
     private static String DB_PATH = "/data/data/com.example.ShopLocation/databases/";
@@ -32,39 +30,39 @@ public class ShopLocationDbHelper extends SQLiteOpenHelper {
 
     public void createDatabase() throws IOException {
         boolean dbExists = checkDatabase();
-        if(dbExists){
+        if (dbExists) {
             //do nothing, database already exists
-        }else{
+        } else {
             this.getReadableDatabase();
-            try{
+            try {
                 copyDatabase();
-            }catch(IOException e){
+            } catch (IOException e) {
                 throw new Error("Error copying database");
             }
         }
     }
 
-    private boolean checkDatabase(){
+    private boolean checkDatabase() {
         SQLiteDatabase checkDb = null;
-        try{
+        try {
             String myPath = DB_PATH + DB_NAME;
             checkDb = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
-        }catch(SQLiteException e){
+        } catch (SQLiteException e) {
             //database doesn't exist yet
         }
-        if(checkDb != null){
+        if (checkDb != null) {
             checkDb.close();
         }
         return checkDb != null ? true : false;
     }
 
-    private void copyDatabase() throws IOException{
+    private void copyDatabase() throws IOException {
         InputStream myInput = myContext.getAssets().open(DB_NAME);
         String outFileName = DB_PATH + DB_NAME;
         OutputStream myOutput = new FileOutputStream(outFileName);
         byte[] buffer = new byte[1024];
         int length;
-        while((length = myInput.read(buffer))>0){
+        while ((length = myInput.read(buffer)) > 0) {
             myOutput.write(buffer, 0, length);
         }
         myOutput.flush();
@@ -72,24 +70,26 @@ public class ShopLocationDbHelper extends SQLiteOpenHelper {
         myInput.close();
     }
 
-    public void openDatabase() throws SQLException{
+    public void openDatabase() throws SQLException {
         String myPath = DB_PATH + DB_NAME;
         myDatabase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
     }
 
     @Override
-    public synchronized void close(){
-        if(myDatabase != null){
+    public synchronized void close() {
+        if (myDatabase != null) {
             myDatabase.close();
             super.close();
         }
     }
 
     @Override
-    public void onCreate(SQLiteDatabase db){}
+    public void onCreate(SQLiteDatabase db) {
+    }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){}
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    }
 
     public String[] query() {
         String myQuery = "SELECT * FROM shop";
@@ -99,8 +99,8 @@ public class ShopLocationDbHelper extends SQLiteOpenHelper {
             cursor = myDatabase.rawQuery(myQuery, null);
             if (cursor != null) {
 
-                for(int i = 0; cursor.moveToNext(); i++){
-                //while (cursor.moveToNext()) {
+                for (int i = 0; cursor.moveToNext(); i++) {
+                    //while (cursor.moveToNext()) {
                     result[i] = cursor.getString(1);
                 }
                 cursor.deactivate();
