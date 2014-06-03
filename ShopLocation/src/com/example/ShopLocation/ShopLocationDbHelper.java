@@ -91,7 +91,7 @@ public class ShopLocationDbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
 
-    public String[] query() {
+    protected String[] query() {
         String myQuery = "SELECT * FROM shop";
         String[] result = {"no_result", "no_result", "no_result"};
         Cursor cursor;
@@ -109,4 +109,5 @@ public class ShopLocationDbHelper extends SQLiteOpenHelper {
         }
         return result;
     }
+
 }

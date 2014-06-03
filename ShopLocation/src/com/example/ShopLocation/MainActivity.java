@@ -33,7 +33,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
     Adapter listAdapter;
     List<Shop> list;
 
-    ShopLocationDbHelper dbHelper;
+    ShopRepository shopRepository;
 
     //Called when the activity is first created.
     @Override
@@ -49,16 +49,9 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
         final ListView listView = (ListView) findViewById(R.id.shop_list);
         listView.setAdapter((ListAdapter) listAdapter);
 
-        dbHelper = new ShopLocationDbHelper(this);
-        try {
-            dbHelper.createDatabase();
-        } catch (IOException e) {
-            throw new Error("Unable to create database");
-        }
-        try {
-            dbHelper.openDatabase();
-        } catch (SQLException e) {
-        }
+        shopRepository = ShopDbAdapter.factory.getShopRepository();
+        shopRepository.initializeRepository();
+
 
 
     }
@@ -172,7 +165,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
             TextView tv = (TextView) findViewById(R.id.currentLocation);
             tv.setText(currentLocation.toString());
 
-            String[] s = dbHelper.query();
+            String[] s = shopRepository.query();
 
             Shop shop1 = new Shop(s[0]);
             Shop shop2 = new Shop(s[1]);
