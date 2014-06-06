@@ -1,15 +1,30 @@
 package com.example.ShopLocation;
 
-import android.widget.Adapter;
+import android.widget.ArrayAdapter;
 
-import java.util.List;
+import java.util.ArrayList;
 
-public interface ShopList {
-    Adapter createList();
+public class ShopList {
+    ArrayList<Shop> list;
+    ArrayAdapter<Shop> arrayAdapter;
 
-    List<Shop> getList();
+    ShopList() {
+    }
 
-    void add(Shop shop);
+    public ArrayAdapter<Shop> createList() {
+        //ArrayList to store list items
+        list = new ArrayList<Shop>();
+        //ArrayAdapter to link the ArrayList to the ListView
+        arrayAdapter = new ArrayAdapter<Shop>(ShopLocationApp.getContext(), android.R.layout.simple_list_item_1, list);
+        return arrayAdapter;
+    }
 
-    void notifyDataSetChanged();
+    public ArrayList<Shop> getList() {
+        return list;
+    }
+
+    public void notifyDataSetChanged() {
+        arrayAdapter.notifyDataSetChanged();
+    }
+
 }

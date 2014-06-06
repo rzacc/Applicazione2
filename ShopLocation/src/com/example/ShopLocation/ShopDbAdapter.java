@@ -2,18 +2,13 @@ package com.example.ShopLocation;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class ShopDbAdapter implements ShopRepository {
     ShopLocationDbHelper dbHelper;
 
-    private ShopDbAdapter() {
+    ShopDbAdapter() {
     }
-
-    public static ShopRepositoryFactory factory = new ShopRepositoryFactory(){
-        public ShopRepository getShopRepository(){
-            return new ShopDbAdapter();
-        }
-    };
 
     public void initializeRepository() {
         dbHelper = new ShopLocationDbHelper(ShopLocationApp.getContext());
@@ -30,6 +25,10 @@ public class ShopDbAdapter implements ShopRepository {
 
     public String[] query(){
        return dbHelper.query();
+    }
+
+    public ArrayList<Shop> getNearestShops(double latitude, double longitude){
+        return dbHelper.getNearestShops(latitude, longitude);
     }
 
 }

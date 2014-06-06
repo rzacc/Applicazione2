@@ -14,8 +14,7 @@ import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 
-import java.io.IOException;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends Activity implements GooglePlayServicesClient.ConnectionCallbacks,
@@ -31,7 +30,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
 
     ShopList shopList;
     Adapter listAdapter;
-    List<Shop> list;
+    ArrayList<Shop> list;
 
     ShopRepository shopRepository;
 
@@ -43,19 +42,16 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
         setContentView(R.layout.main);
         ShopLocationApp.setContext(this);
 
-        shopList = ShopListImplementation.factory.getShopList();
+        shopList = new ShopList();
         listAdapter = shopList.createList();
         list = shopList.getList();
         final ListView listView = (ListView) findViewById(R.id.shop_list);
-        listView.setAdapter((ListAdapter) listAdapter);
+        listView.setAdapter((ListAdapter)listAdapter);
 
-        shopRepository = ShopDbAdapter.factory.getShopRepository();
+        shopRepository = new ShopDbAdapter();
         shopRepository.initializeRepository();
 
-
-
     }
-
 
     @Override
     protected void onStart() {
@@ -164,7 +160,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
             //TextView to check current location (to be removed)
             TextView tv = (TextView) findViewById(R.id.currentLocation);
             tv.setText(currentLocation.toString());
-
+/*
             String[] s = shopRepository.query();
 
             Shop shop1 = new Shop(s[0]);
@@ -174,6 +170,15 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
             list.add(shop2);
             list.add(shop3);
             shopList.notifyDataSetChanged();
+
+            */
+            list = shopRepository.getNearestShops(currentLocation.getLatitude(), currentLocation.getLongitude());
+            shopList.notifyDataSetChanged();
+
+            //Shop shop1 = new Shop("SHOP", 0.1, 0.2);
+            //list.add(shop1);
+            //shopList.notifyDataSetChanged();
+
         }
     }
 
