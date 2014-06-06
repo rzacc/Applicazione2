@@ -160,24 +160,9 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
             //TextView to check current location (to be removed)
             TextView tv = (TextView) findViewById(R.id.currentLocation);
             tv.setText(currentLocation.toString());
-/*
-            String[] s = shopRepository.query();
 
-            Shop shop1 = new Shop(s[0]);
-            Shop shop2 = new Shop(s[1]);
-            Shop shop3 = new Shop(s[2]);
-            list.add(shop1);
-            list.add(shop2);
-            list.add(shop3);
+            list.addAll(shopRepository.getNearestShops(currentLocation.getLatitude(), currentLocation.getLongitude()));
             shopList.notifyDataSetChanged();
-
-            */
-            list = shopRepository.getNearestShops(currentLocation.getLatitude(), currentLocation.getLongitude());
-            shopList.notifyDataSetChanged();
-
-            //Shop shop1 = new Shop("SHOP", 0.1, 0.2);
-            //list.add(shop1);
-            //shopList.notifyDataSetChanged();
 
         }
     }

@@ -207,6 +207,14 @@ public class ShopLocationDbHelper extends SQLiteOpenHelper {
             }
         } catch (Exception e) {
         }
+        //loop on the filtered data to determine if they are near the user position (identified by center)
+        for(int i = 0; i < result.size(); ){
+            if(shopIsInCircle(result.get(i), center, radius))
+                i++;
+            else
+                result.remove(i);
+        }
+
         return result;
 
     }
