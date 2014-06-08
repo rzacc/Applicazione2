@@ -13,7 +13,8 @@ public class Shop {
     }
 
     public String toString() {
-        return name + " " + latitude + " " + longitude;
+        double distanceKm = distance/1000;
+        return name + "\nDistanza: " + distanceKm + " km";
     }
 
 }
