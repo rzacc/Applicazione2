@@ -13,6 +13,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class ShopLocationDbHelper extends SQLiteOpenHelper {
 
@@ -100,26 +102,6 @@ public class ShopLocationDbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
 
-    protected String[] query() {
-        String myQuery = "SELECT * FROM shop";
-        String[] result = {"no_result", "no_result", "no_result"};
-        Cursor cursor;
-        try {
-            cursor = myDatabase.rawQuery(myQuery, null);
-            if (cursor != null) {
-
-                for (int i = 0; cursor.moveToNext(); i++) {
-                    //while (cursor.moveToNext()) {
-                    result[i] = cursor.getString(1);
-                }
-                //cursor.deactivate();
-                cursor.close();
-            }
-        } catch (Exception e) {
-        }
-        return result;
-    }
-
     public static PointF calculateDerivedPosition(PointF point, double range, double bearing) {
         double EarthRadius = 6371000;
 
@@ -145,19 +127,19 @@ public class ShopLocationDbHelper extends SQLiteOpenHelper {
         lat = Math.toDegrees(lat);
         lon = Math.toDegrees(lon);
 
-        PointF newPoint = new PointF((float)lat, (float)lon);
+        PointF newPoint = new PointF((float) lat, (float) lon);
         return newPoint;
     }
 
-    public static boolean shopIsInCircle(Shop shopToCheck, PointF center, double radius){
-        PointF pointToCheck = new PointF((float)shopToCheck.latitude, (float)shopToCheck.longitude);
-        if(getDistanceBetweenTwoPoints(pointToCheck, center) <= radius)
+    public static boolean shopIsInCircle(Shop shopToCheck, PointF center, double radius) {
+        PointF pointToCheck = new PointF((float) shopToCheck.latitude, (float) shopToCheck.longitude);
+        if (getDistanceBetweenTwoPoints(pointToCheck, center) <= radius)
             return true;
         else
             return false;
     }
 
-    public static double getDistanceBetweenTwoPoints(PointF p1, PointF p2){
+    public static double getDistanceBetweenTwoPoints(PointF p1, PointF p2) {
         double R = 6371000;
         double dLat = Math.toRadians(p2.x - p1.x);
         double dLon = Math.toRadians(p2.y - p1.y);
@@ -172,8 +154,9 @@ public class ShopLocationDbHelper extends SQLiteOpenHelper {
         return d;
     }
 
-    public ArrayList<Shop> getNearestShops(double latitude, double longitude){
-        PointF center = new PointF((float)latitude,(float) longitude);
+
+    public ArrayList<Shop> getNearestShops(double latitude, double longitude) {
+        PointF center = new PointF((float) latitude, (float) longitude);
         ArrayList<Shop> result = new ArrayList<Shop>();
 
         final double mult = 1.1;
@@ -208,17 +191,30 @@ public class ShopLocationDbHelper extends SQLiteOpenHelper {
         } catch (Exception e) {
         }
         //loop on the filtered data to determine if they are near the user position (identified by center)
-        for(int i = 0; i < result.size(); ){
-            if(shopIsInCircle(result.get(i), center, radius))
+        for (int i = 0; i < result.size(); ) {
+            if (shopIsInCircle(result.get(i), center, radius))
                 i++;
             else
                 result.remove(i);
         }
 
+        //set the distance field for each Shop in result
+        for (Shop shop : result) {
+            PointF shopPoint = new PointF((float) shop.latitude, (float) shop.longitude);
+            shop.distance = getDistanceBetweenTwoPoints(shopPoint, center);
+        }
+
+        //order Shop objects in result by distance from the user position
+        Collections.sort(result, new Comparator<Shop>() {
+            @Override
+            public int compare(Shop shop1, Shop shop2) {
+                return Double.compare(shop1.distance, shop2.distance);
+            }
+        });
+
         return result;
 
     }
-
 
 
 }

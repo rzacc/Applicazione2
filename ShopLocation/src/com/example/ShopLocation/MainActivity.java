@@ -15,7 +15,6 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends Activity implements GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener {
@@ -46,7 +45,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
         listAdapter = shopList.createList();
         list = shopList.getList();
         final ListView listView = (ListView) findViewById(R.id.shop_list);
-        listView.setAdapter((ListAdapter)listAdapter);
+        listView.setAdapter((ListAdapter) listAdapter);
 
         shopRepository = new ShopDbAdapter();
         shopRepository.initializeRepository();

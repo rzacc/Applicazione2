@@ -23,11 +23,7 @@ public class ShopDbAdapter implements ShopRepository {
         }
     }
 
-    public String[] query(){
-       return dbHelper.query();
-    }
-
-    public ArrayList<Shop> getNearestShops(double latitude, double longitude){
+    public ArrayList<Shop> getNearestShops(double latitude, double longitude) {
         return dbHelper.getNearestShops(latitude, longitude);
     }
 
