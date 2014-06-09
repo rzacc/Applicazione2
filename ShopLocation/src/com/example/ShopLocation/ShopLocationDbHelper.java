@@ -131,14 +131,6 @@ public class ShopLocationDbHelper extends SQLiteOpenHelper {
         return newPoint;
     }
 
-    public static boolean shopIsInCircle(Shop shopToCheck, PointF center, double radius) {
-        PointF pointToCheck = new PointF((float) shopToCheck.latitude, (float) shopToCheck.longitude);
-        if (getDistanceBetweenTwoPoints(pointToCheck, center) <= radius)
-            return true;
-        else
-            return false;
-    }
-
     public static double getDistanceBetweenTwoPoints(PointF p1, PointF p2) {
         double R = 6371000;
         double dLat = Math.toRadians(p2.x - p1.x);
@@ -154,6 +146,13 @@ public class ShopLocationDbHelper extends SQLiteOpenHelper {
         return d;
     }
 
+    public static boolean shopIsInCircle(Shop shopToCheck, PointF center, double radius) {
+        PointF pointToCheck = new PointF((float) shopToCheck.latitude, (float) shopToCheck.longitude);
+        if (getDistanceBetweenTwoPoints(pointToCheck, center) <= radius)
+            return true;
+        else
+            return false;
+    }
 
     public ArrayList<Shop> getNearestShops(double latitude, double longitude) {
         PointF center = new PointF((float) latitude, (float) longitude);
@@ -215,6 +214,5 @@ public class ShopLocationDbHelper extends SQLiteOpenHelper {
         return result;
 
     }
-
 
 }

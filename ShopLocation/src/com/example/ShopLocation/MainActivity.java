@@ -8,7 +8,10 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.*;
+import android.widget.Adapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -150,19 +153,12 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
         }
     }
 
-
     //Called when "Cerca negozi" is clicked
     public void searchForShops(View v) {
         if (servicesConnected()) {
             currentLocation = locationClient.getLastLocation();
-
-            //TextView to check current location (to be removed)
-            TextView tv = (TextView) findViewById(R.id.currentLocation);
-            tv.setText(currentLocation.toString());
-
             list.addAll(shopRepository.getNearestShops(currentLocation.getLatitude(), currentLocation.getLongitude()));
             shopList.notifyDataSetChanged();
-
         }
     }
 
