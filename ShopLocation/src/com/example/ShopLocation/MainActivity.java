@@ -19,14 +19,13 @@ import com.google.android.gms.location.LocationClient;
 
 import java.util.ArrayList;
 
-public class MainActivity extends Activity implements GooglePlayServicesClient.ConnectionCallbacks,
-        GooglePlayServicesClient.OnConnectionFailedListener {
+public class MainActivity extends Activity implements GooglePlayServicesClient.OnConnectionFailedListener {
 
     /*
      * Define a request code to send to Google Play Services
      * This code is returned in Activity.onActivityResult
      */
-    private static final int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+    static final int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     LocationClient locationClient;
     Location currentLocation;
 
@@ -40,7 +39,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        locationClient = new LocationClient(this, this, this);
+        locationClient = new LocationClient(this, new LocationCallbacks(), this);
         setContentView(R.layout.main);
         ShopLocationApp.setContext(this);
 
@@ -110,20 +109,6 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
         }
     }
 
-    //Called by Location Services when the request to connect the client finishes successfully.
-    @Override
-    public void onConnected(Bundle dataBundle) {
-        //Display the connection status
-        Toast.makeText(this, "Connected to Location Services", Toast.LENGTH_SHORT).show();
-    }
-
-    //Called by Location Services if the connection to the location client drops because of an error.
-    @Override
-    public void onDisconnected() {
-        //Display the connection status
-        Toast.makeText(this, "Disconnected from Location Services. Please re-connect.", Toast.LENGTH_SHORT).show();
-    }
-
     //Called by Location Services if the attempt to Location Services fails.
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
@@ -153,13 +138,25 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.C
         }
     }
 
-    //Called when "Cerca negozi" is clicked
+    //Called when "Find shops" is clicked
     public void searchForShops(View v) {
         if (servicesConnected()) {
+            if (!list.isEmpty()) {
+                list.clear();
+            }
             currentLocation = locationClient.getLastLocation();
             list.addAll(shopRepository.getNearestShops(currentLocation.getLatitude(), currentLocation.getLongitude()));
             shopList.notifyDataSetChanged();
         }
+    }
+
+    //Called when "Clear" is clicked
+    public void clearList(View v) {
+        if (!list.isEmpty()) {
+            list.clear();
+            shopList.notifyDataSetChanged();
+        } else
+            Toast.makeText(this, "List empty", Toast.LENGTH_SHORT).show();
     }
 
 }

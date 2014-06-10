@@ -14,7 +14,7 @@ public class Shop {
 
     public String toString() {
         double distanceKm = distance / 1000;
-        return name + "\nDistanza: " + distanceKm + " km";
+        return name + "\nDistance: " + distanceKm + " km";
     }
 
 }

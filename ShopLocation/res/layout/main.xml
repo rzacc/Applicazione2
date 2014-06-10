@@ -13,13 +13,21 @@
             android:onClick="searchForShops"
             />
 
+    <Button
+            android:id="@+id/clear_list_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="@string/clear_list"
+            android:onClick="clearList"
+            />
+
     <ListView
             android:id="@+id/shop_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             />
-
 
 </LinearLayout>
 

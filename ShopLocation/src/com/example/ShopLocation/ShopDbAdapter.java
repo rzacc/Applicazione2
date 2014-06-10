@@ -6,12 +6,14 @@ import java.util.ArrayList;
 
 public class ShopDbAdapter implements ShopRepository {
     ShopLocationDbHelper dbHelper;
+    ShopFinder shopFinder;
 
     ShopDbAdapter() {
     }
 
     public void initializeRepository() {
         dbHelper = new ShopLocationDbHelper(ShopLocationApp.getContext());
+        shopFinder = new ShopFinder();
         try {
             dbHelper.createDatabase();
         } catch (IOException e) {
@@ -24,7 +26,7 @@ public class ShopDbAdapter implements ShopRepository {
     }
 
     public ArrayList<Shop> getNearestShops(double latitude, double longitude) {
-        return dbHelper.getNearestShops(latitude, longitude);
+        return shopFinder.getNearestShops(latitude, longitude);
     }
 
 }
