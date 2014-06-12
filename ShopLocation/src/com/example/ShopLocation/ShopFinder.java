@@ -99,7 +99,8 @@ public class ShopFinder {
                     String shopName = cursor.getString(1);    //shop name
                     double shopLatitude = cursor.getDouble(2);  //shop latitude
                     double shopLongitude = cursor.getDouble(3); //shop longitude
-                    Shop shop = new Shop(shopName, shopLatitude, shopLongitude);
+                    String shopAddress = cursor.getString(4); //shop address
+                    Shop shop = new Shop(shopName, shopLatitude, shopLongitude, shopAddress);
                     result.add(shop);   //add shop to ArrayList<Shop> result
                 }
                 cursor.close();

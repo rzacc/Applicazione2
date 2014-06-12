@@ -5,16 +5,19 @@ public class Shop {
     double latitude;
     double longitude;
     double distance;
+    String address;
 
-    public Shop(String name, double latitude, double longitude) {
+
+    public Shop(String name, double latitude, double longitude, String address) {
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.address = address;
     }
 
     public String toString() {
         double distanceKm = distance / 1000;
-        return name + "\nDistance: " + distanceKm + " km";
+        return name + "\n" + address + "\nDistance: " + distanceKm + " km";
     }
 
 }
