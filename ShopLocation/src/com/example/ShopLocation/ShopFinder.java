@@ -1,6 +1,5 @@
 package com.example.ShopLocation;
 
-import android.database.Cursor;
 import android.graphics.PointF;
 
 import java.util.ArrayList;
@@ -8,13 +7,6 @@ import java.util.Collections;
 import java.util.Comparator;
 
 public class ShopFinder {
-
-    public static final String TABLE_NAME = "shop";
-    public static final String COLUMN_NAME_NAME = "name";
-    public static final String COLUMN_NAME_LATITUDE = "latitude";
-    public static final String COLUMN_NAME_LONGITUDE = "longitude";
-
-    private double radius = 10000;      //search radius = 10km
 
     public ShopFinder() {
     }
@@ -71,65 +63,31 @@ public class ShopFinder {
             return false;
     }
 
-    public ArrayList<Shop> getNearestShops(double latitude, double longitude) {
-        PointF center = new PointF((float) latitude, (float) longitude);
-        ArrayList<Shop> result = new ArrayList<Shop>();
+    public ArrayList<Shop> getNearestShops(PointF center, double radius, ArrayList<Shop> filteredShops) {
 
-        final double mult = 1.1;
-        PointF p1 = calculateDerivedPosition(center, mult * radius, 0);
-        PointF p2 = calculateDerivedPosition(center, mult * radius, 90);
-        PointF p3 = calculateDerivedPosition(center, mult * radius, 180);
-        PointF p4 = calculateDerivedPosition(center, mult * radius, 270);
-
-        String whereClause = " WHERE "
-                + COLUMN_NAME_LATITUDE + " > " + String.valueOf(p3.x) + " AND "
-                + COLUMN_NAME_LATITUDE + " < " + String.valueOf(p1.x) + " AND "
-                + COLUMN_NAME_LONGITUDE + " < " + String.valueOf(p2.y) + " AND "
-                + COLUMN_NAME_LONGITUDE + " > " + String.valueOf(p4.y);
-
-        String query = "SELECT * FROM " + TABLE_NAME + whereClause;
-        Cursor cursor;
-
-        try {
-            cursor = ShopLocationDbHelper.myDatabase.rawQuery(query, null);
-            if (cursor != null) {
-
-                for (int i = 0; cursor.moveToNext(); i++) {
-
-                    String shopName = cursor.getString(1);    //shop name
-                    double shopLatitude = cursor.getDouble(2);  //shop latitude
-                    double shopLongitude = cursor.getDouble(3); //shop longitude
-                    String shopAddress = cursor.getString(4); //shop address
-                    Shop shop = new Shop(shopName, shopLatitude, shopLongitude, shopAddress);
-                    result.add(shop);   //add shop to ArrayList<Shop> result
-                }
-                cursor.close();
-            }
-        } catch (Exception e) {
-        }
         //loop on the filtered data to determine if they are near the user position (identified by center)
-        for (int i = 0; i < result.size(); ) {
-            if (shopIsInCircle(result.get(i), center, radius))
+        for (int i = 0; i < filteredShops.size(); ) {
+            if (shopIsInCircle(filteredShops.get(i), center, radius))
                 i++;
             else
-                result.remove(i);
+                filteredShops.remove(i);
         }
 
         //set the distance field for each Shop in result
-        for (Shop shop : result) {
+        for (Shop shop : filteredShops) {
             PointF shopPoint = new PointF((float) shop.latitude, (float) shop.longitude);
             shop.distance = getDistanceBetweenTwoPoints(shopPoint, center);
         }
 
         //order Shop objects in result by distance from the user position
-        Collections.sort(result, new Comparator<Shop>() {
+        Collections.sort(filteredShops, new Comparator<Shop>() {
             @Override
             public int compare(Shop shop1, Shop shop2) {
                 return Double.compare(shop1.distance, shop2.distance);
             }
         });
 
-        return result;
+        return filteredShops;
 
     }
 }

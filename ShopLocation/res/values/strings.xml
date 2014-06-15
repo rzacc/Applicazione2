@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ShopLocation</string>
+    <string name="set_radius">Set radius:</string>
     <string name="find_shops">Find shops</string>
     <string name="clear_list">Clear</string>
+    <string name="connected_to_location_services">Connected to Location Services</string>
+    <string name="disconnected_from_location_services">Disconnected from Location Services. Please re-connect.</string>
+    <string name="specify_search_radius">Specify search radius</string>
+    <string name="no_shops_found">No shops found in the specified radius</string>
+    <string name="too_large_radius">Search radius value is too large.\nInsert a value smaller than or equal to 8000.</string>
+    <string name="empty_list">List is already empty</string>
 
 </resources>

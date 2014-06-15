@@ -1,15 +1,18 @@
 package com.example.ShopLocation;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.PointF;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class ShopLocationDbHelper extends SQLiteOpenHelper {
 
@@ -18,8 +21,13 @@ public class ShopLocationDbHelper extends SQLiteOpenHelper {
     private static String DB_NAME = "ShopDatabase.sqlite";
     public static int DB_VERSION = 1;
 
-    static SQLiteDatabase myDatabase;
+    SQLiteDatabase myDatabase;
     private final Context myContext;
+
+    public static final String TABLE_NAME = "shop";
+    public static final String COLUMN_NAME_NAME = "name";
+    public static final String COLUMN_NAME_LATITUDE = "latitude";
+    public static final String COLUMN_NAME_LONGITUDE = "longitude";
 
     public ShopLocationDbHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -79,6 +87,37 @@ public class ShopLocationDbHelper extends SQLiteOpenHelper {
             myDatabase.close();
             super.close();
         }
+    }
+
+    public ArrayList<Shop> filterShops(PointF p1, PointF p2, PointF p3, PointF p4) {
+        ArrayList<Shop> arrayList = new ArrayList<Shop>();
+        String whereClause = " WHERE "
+                + COLUMN_NAME_LATITUDE + " > " + String.valueOf(p3.x) + " AND "
+                + COLUMN_NAME_LATITUDE + " < " + String.valueOf(p1.x) + " AND "
+                + COLUMN_NAME_LONGITUDE + " < " + String.valueOf(p2.y) + " AND "
+                + COLUMN_NAME_LONGITUDE + " > " + String.valueOf(p4.y);
+
+        String query = "SELECT * FROM " + TABLE_NAME + whereClause;
+        Cursor cursor;
+
+        try {
+            cursor = myDatabase.rawQuery(query, null);
+            if (cursor != null) {
+
+                for (int i = 0; cursor.moveToNext(); i++) {
+
+                    String shopName = cursor.getString(1);    //shop name
+                    double shopLatitude = cursor.getDouble(2);  //shop latitude
+                    double shopLongitude = cursor.getDouble(3); //shop longitude
+                    String shopAddress = cursor.getString(4); //shop address
+                    Shop shop = new Shop(shopName, shopLatitude, shopLongitude, shopAddress);
+                    arrayList.add(shop);   //add shop to ArrayList<Shop> result
+                }
+                cursor.close();
+            }
+        } catch (Exception e) {
+        }
+        return arrayList;
     }
 
     @Override

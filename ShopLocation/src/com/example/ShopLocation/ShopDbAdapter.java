@@ -1,5 +1,7 @@
 package com.example.ShopLocation;
 
+import android.graphics.PointF;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -25,8 +27,12 @@ public class ShopDbAdapter implements ShopRepository {
         }
     }
 
-    public ArrayList<Shop> getNearestShops(double latitude, double longitude) {
-        return shopFinder.getNearestShops(latitude, longitude);
+    public ArrayList<Shop> filterShops(PointF p1, PointF p2, PointF p3, PointF p4) {
+        return dbHelper.filterShops(p1, p2, p3, p4);
+    }
+
+    public ArrayList<Shop> getNearestShops(PointF center, double radius, ArrayList<Shop> filteredShops) {
+        return shopFinder.getNearestShops(center, radius, filteredShops);
     }
 
 }

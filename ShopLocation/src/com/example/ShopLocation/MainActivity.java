@@ -3,29 +3,26 @@ package com.example.ShopLocation;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
-import android.content.IntentSender;
+import android.graphics.PointF;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
-import android.widget.Adapter;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.*;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 
 import java.util.ArrayList;
 
-public class MainActivity extends Activity implements GooglePlayServicesClient.OnConnectionFailedListener {
+public class MainActivity extends Activity {
 
     /*
      * Define a request code to send to Google Play Services
      * This code is returned in Activity.onActivityResult
      */
-    static final int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+
     LocationClient locationClient;
     Location currentLocation;
 
@@ -35,14 +32,18 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
 
     ShopRepository shopRepository;
 
+    double radius;  //search radius
+    EditText radiusEditText;
+
     //Called when the activity is first created.
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        locationClient = new LocationClient(this, new LocationCallbacks(), this);
+        locationClient = new LocationClient(this, new LocationCallbacks(), new LocationConnectionFailedListener(this));
         setContentView(R.layout.main);
         ShopLocationApp.setContext(this);
 
+        radiusEditText = (EditText) findViewById(R.id.radius_editText);
         shopList = new ShopList();
         listAdapter = shopList.createList();
         list = shopList.getList();
@@ -80,14 +81,14 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
         } else {
             //The error code is in resultCode
             //Get the error dialog from Google Play services
-            Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(resultCode, this, CONNECTION_FAILURE_RESOLUTION_REQUEST);
+            Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(resultCode, this, LocationConnectionFailedListener.CONNECTION_FAILURE_RESOLUTION_REQUEST);
 
             //If Google Play services can provide an error dialog
             if (errorDialog != null) {
                 ErrorDialogFragment errorFragment = new ErrorDialogFragment();
                 errorFragment.setDialog(errorDialog);
                 //Show the error dialog in the DialogFragment
-                errorFragment.show(this.getFragmentManager(), "Location Updates");
+                errorFragment.show(this.getFragmentManager(), "Location updates");
             }
             return false;
         }
@@ -100,41 +101,12 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //Decide what to do based on the original request code
         switch (requestCode) {
-            case CONNECTION_FAILURE_RESOLUTION_REQUEST:
+            case LocationConnectionFailedListener.CONNECTION_FAILURE_RESOLUTION_REQUEST:
                 //If the result code is Activity.RESULT_OK, try to connect again
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         servicesConnected();
                 }
-        }
-    }
-
-    //Called by Location Services if the attempt to Location Services fails.
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        /*
-         * Google Play services can resolve some errors it detects. If the error has a resolution, try sending an
-         * Intent to start a Google Play services activity that can resolve the error.
-         */
-        if (connectionResult.hasResolution()) {
-            try {
-                //Start an Activity that tries to resolve the error
-                connectionResult.startResolutionForResult(this, CONNECTION_FAILURE_RESOLUTION_REQUEST);
-            } catch (IntentSender.SendIntentException e) {
-                e.printStackTrace();
-            }
-        } else {
-            //If no resolution is available, display a dialog to the user with the error
-            Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(connectionResult.getErrorCode(), this,
-                    CONNECTION_FAILURE_RESOLUTION_REQUEST);
-
-            //If Google Play services can provide an error dialog
-            if (errorDialog != null) {
-                ErrorDialogFragment errorFragment = new ErrorDialogFragment();
-                errorFragment.setDialog(errorDialog);
-                //Show the error dialog in the DialogFragment
-                errorFragment.show(this.getFragmentManager(), "Connection Failed");
-            }
         }
     }
 
@@ -145,8 +117,50 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
                 list.clear();
             }
             currentLocation = locationClient.getLastLocation();
-            list.addAll(shopRepository.getNearestShops(currentLocation.getLatitude(), currentLocation.getLongitude()));
+            radius = 0;
+            boolean notSpecifiedRadius = false;
+            boolean tooLargeRadius = false;
+
+            try {
+                radius = Double.parseDouble(radiusEditText.getText().toString());
+            } catch (Exception e) {
+                if (radiusEditText.getText().length() == 0) {
+                    notSpecifiedRadius = true;
+                }
+            }
+
+            if (radius > 8000) {
+                tooLargeRadius = true;
+                radius = 0;
+            }
+
+            radius = radius * 1000; //convert kilometers in meters
+
+            PointF center = new PointF((float) currentLocation.getLatitude(), (float) currentLocation.getLongitude());
+            final double mult = 1.1;
+            PointF p1 = ShopFinder.calculateDerivedPosition(center, mult * radius, 0);
+            PointF p2 = ShopFinder.calculateDerivedPosition(center, mult * radius, 90);
+            PointF p3 = ShopFinder.calculateDerivedPosition(center, mult * radius, 180);
+            PointF p4 = ShopFinder.calculateDerivedPosition(center, mult * radius, 270);
+            ArrayList<Shop> filteredShops = shopRepository.filterShops(p1, p2, p3, p4);
+
+            list.addAll(shopRepository.getNearestShops(center, radius, filteredShops));
             shopList.notifyDataSetChanged();
+            if (list.isEmpty()) {
+                if (notSpecifiedRadius) {
+                    Toast toast = Toast.makeText(this, R.string.specify_search_radius, Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER, 0, -40);
+                    toast.show();
+                } else if (tooLargeRadius) {
+                    Toast toast = Toast.makeText(this, R.string.too_large_radius, Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER, 0, -71);
+                    toast.show();
+                } else {
+                    Toast toast = Toast.makeText(this, R.string.no_shops_found, Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER, 0, -40);
+                    toast.show();
+                }
+            }
         }
     }
 
@@ -155,8 +169,11 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
         if (!list.isEmpty()) {
             list.clear();
             shopList.notifyDataSetChanged();
-        } else
-            Toast.makeText(this, "List empty", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast toast = Toast.makeText(this, R.string.empty_list, Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER, 0, -40);
+            toast.show();
+        }
     }
 
 }

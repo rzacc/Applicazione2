@@ -2,10 +2,10 @@ package com.example.ShopLocation;
 
 public class Shop {
     String name;
+    String address;
     double latitude;
     double longitude;
     double distance;
-    String address;
 
 
     public Shop(String name, double latitude, double longitude, String address) {
