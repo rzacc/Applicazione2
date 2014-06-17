@@ -63,7 +63,7 @@ public class ShopFinder {
             return false;
     }
 
-    public ArrayList<Shop> getNearestShops(PointF center, double radius, ArrayList<Shop> filteredShops) {
+    public ArrayList<Shop> getShops(PointF center, double radius, ArrayList<Shop> filteredShops) {
 
         //loop on the filtered data to determine if they are near the user position (identified by center)
         for (int i = 0; i < filteredShops.size(); ) {

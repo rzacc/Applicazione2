@@ -89,7 +89,13 @@ public class ShopLocationDbHelper extends SQLiteOpenHelper {
         }
     }
 
-    public ArrayList<Shop> filterShops(PointF p1, PointF p2, PointF p3, PointF p4) {
+    public ArrayList<Shop> filterShops(PointF center, double radius) {
+        final double mult = 1.1;
+        PointF p1 = ShopFinder.calculateDerivedPosition(center, mult * radius, 0);
+        PointF p2 = ShopFinder.calculateDerivedPosition(center, mult * radius, 90);
+        PointF p3 = ShopFinder.calculateDerivedPosition(center, mult * radius, 180);
+        PointF p4 = ShopFinder.calculateDerivedPosition(center, mult * radius, 270);
+
         ArrayList<Shop> arrayList = new ArrayList<Shop>();
         String whereClause = " WHERE "
                 + COLUMN_NAME_LATITUDE + " > " + String.valueOf(p3.x) + " AND "

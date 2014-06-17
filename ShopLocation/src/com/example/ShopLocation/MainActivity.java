@@ -31,6 +31,7 @@ public class MainActivity extends Activity {
     ArrayList<Shop> list;
 
     ShopRepository shopRepository;
+    ShopFinder shopFinder;
 
     double radius;  //search radius
     EditText radiusEditText;
@@ -52,6 +53,7 @@ public class MainActivity extends Activity {
 
         shopRepository = new ShopDbAdapter();
         shopRepository.initializeRepository();
+        shopFinder = new ShopFinder();
 
     }
 
@@ -137,15 +139,10 @@ public class MainActivity extends Activity {
             radius = radius * 1000; //convert kilometers in meters
 
             PointF center = new PointF((float) currentLocation.getLatitude(), (float) currentLocation.getLongitude());
-            final double mult = 1.1;
-            PointF p1 = ShopFinder.calculateDerivedPosition(center, mult * radius, 0);
-            PointF p2 = ShopFinder.calculateDerivedPosition(center, mult * radius, 90);
-            PointF p3 = ShopFinder.calculateDerivedPosition(center, mult * radius, 180);
-            PointF p4 = ShopFinder.calculateDerivedPosition(center, mult * radius, 270);
-            ArrayList<Shop> filteredShops = shopRepository.filterShops(p1, p2, p3, p4);
-
-            list.addAll(shopRepository.getNearestShops(center, radius, filteredShops));
+            ArrayList<Shop> filteredShops = shopRepository.filterShops(center, radius);
+            list.addAll(shopFinder.getShops(center, radius, filteredShops));
             shopList.notifyDataSetChanged();
+
             if (list.isEmpty()) {
                 if (notSpecifiedRadius) {
                     Toast toast = Toast.makeText(this, R.string.specify_search_radius, Toast.LENGTH_SHORT);
