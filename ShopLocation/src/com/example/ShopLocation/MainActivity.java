@@ -35,6 +35,8 @@ public class MainActivity extends Activity {
 
     double radius;  //search radius
     EditText radiusEditText;
+    boolean notSpecifiedRadius;
+    boolean tooLargeRadius;
 
     //Called when the activity is first created.
     @Override
@@ -112,6 +114,25 @@ public class MainActivity extends Activity {
         }
     }
 
+    double getRadiusFromUserInput() {
+        double radius = 0;
+        try {
+            radius = Double.parseDouble(radiusEditText.getText().toString());
+        } catch (Exception e) {
+            if (radiusEditText.getText().length() == 0) {
+                notSpecifiedRadius = true;
+            }
+        }
+
+        if (radius > 8000) {
+            tooLargeRadius = true;
+            radius = 0;
+        }
+
+        radius = radius * 1000; //convert kilometers in meters
+        return radius;
+    }
+
     //Called when "Find shops" is clicked
     public void searchForShops(View v) {
         if (servicesConnected()) {
@@ -119,24 +140,10 @@ public class MainActivity extends Activity {
                 list.clear();
             }
             currentLocation = locationClient.getLastLocation();
-            radius = 0;
-            boolean notSpecifiedRadius = false;
-            boolean tooLargeRadius = false;
 
-            try {
-                radius = Double.parseDouble(radiusEditText.getText().toString());
-            } catch (Exception e) {
-                if (radiusEditText.getText().length() == 0) {
-                    notSpecifiedRadius = true;
-                }
-            }
-
-            if (radius > 8000) {
-                tooLargeRadius = true;
-                radius = 0;
-            }
-
-            radius = radius * 1000; //convert kilometers in meters
+            notSpecifiedRadius = false;
+            tooLargeRadius = false;
+            radius = getRadiusFromUserInput();
 
             PointF center = new PointF((float) currentLocation.getLatitude(), (float) currentLocation.getLongitude());
             ArrayList<Shop> filteredShops = shopRepository.filterShops(center, radius);
