@@ -14,6 +14,7 @@ public class LocationCallbacks implements GooglePlayServicesClient.ConnectionCal
     @Override
     public void onConnected(Bundle dataBundle) {
         //Display the connection status
+        //TODO codice duplicato la stessa duplicazione c'è in piu classi quindi si può definire un oggetto che gestisce questo comportamento
         Toast toast = Toast.makeText(ShopLocationApp.getContext(), R.string.connected_to_location_services, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, -40);
         toast.show();

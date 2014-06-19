@@ -25,6 +25,7 @@ public class ShopLocationDbHelper extends SQLiteOpenHelper {
     private final Context myContext;
 
     public static final String TABLE_NAME = "shop";
+    //TODO attributo non usato
     public static final String COLUMN_NAME_NAME = "name";
     public static final String COLUMN_NAME_LATITUDE = "latitude";
     public static final String COLUMN_NAME_LONGITUDE = "longitude";
@@ -36,6 +37,8 @@ public class ShopLocationDbHelper extends SQLiteOpenHelper {
 
     public void createDatabase() throws IOException {
         boolean dbExists = checkDatabase();
+
+        //TODO qua si può togliere if else e può rimanere un if con la condizione
         if (dbExists) {
             //do nothing, database already exists
         } else {

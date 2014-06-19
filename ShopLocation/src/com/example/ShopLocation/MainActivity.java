@@ -22,7 +22,6 @@ public class MainActivity extends Activity {
      * Define a request code to send to Google Play Services
      * This code is returned in Activity.onActivityResult
      */
-
     LocationClient locationClient;
     Location currentLocation;
 
@@ -41,6 +40,7 @@ public class MainActivity extends Activity {
     //Called when the activity is first created.
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         locationClient = new LocationClient(this, new LocationCallbacks(), new LocationConnectionFailedListener(this));
         setContentView(R.layout.main);
@@ -50,6 +50,7 @@ public class MainActivity extends Activity {
         shopList = new ShopList();
         listAdapter = shopList.createList();
         list = shopList.getList();
+
         final ListView listView = (ListView) findViewById(R.id.shop_list);
         listView.setAdapter((ListAdapter) listAdapter);
 
@@ -104,6 +105,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //Decide what to do based on the original request code
+        //TODO questo potrebbe essere un unico if con le due condizioni in AND
         switch (requestCode) {
             case LocationConnectionFailedListener.CONNECTION_FAILURE_RESOLUTION_REQUEST:
                 //If the result code is Activity.RESULT_OK, try to connect again
@@ -134,11 +136,14 @@ public class MainActivity extends Activity {
     }
 
     //Called when "Find shops" is clicked
+    //TODO il parametro se non serve toglilo
     public void searchForShops(View v) {
         if (servicesConnected()) {
+
             if (!list.isEmpty()) {
                 list.clear();
             }
+
             currentLocation = locationClient.getLastLocation();
 
             notSpecifiedRadius = false;
@@ -152,6 +157,7 @@ public class MainActivity extends Activity {
 
             if (list.isEmpty()) {
                 if (notSpecifiedRadius) {
+                    //TODO codice duplicato
                     Toast toast = Toast.makeText(this, R.string.specify_search_radius, Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.CENTER, 0, -40);
                     toast.show();
@@ -169,11 +175,15 @@ public class MainActivity extends Activity {
     }
 
     //Called when "Clear" is clicked
+    //TODO il parametro se non serve toglilo
     public void clearList(View v) {
+
         if (!list.isEmpty()) {
             list.clear();
             shopList.notifyDataSetChanged();
+
         } else {
+            //TODO codice duplicato
             Toast toast = Toast.makeText(this, R.string.empty_list, Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.CENTER, 0, -40);
             toast.show();
